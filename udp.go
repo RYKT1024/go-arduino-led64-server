@@ -29,3 +29,34 @@ func Udp_send(targetIP, targetPort, data string) {
 
 	fmt.Println("UDP packet sent successfully.")
 }
+
+func HandleUDP() {
+	// 监听UDP端口
+	addr, err := net.ResolveUDPAddr("udp", ":6688")
+	if err != nil {
+		fmt.Println("Error resolving UDP address:", err)
+		return
+	}
+
+	conn, err := net.ListenUDP("udp", addr)
+	if err != nil {
+		fmt.Println("Error listening to UDP:", err)
+		return
+	}
+	defer conn.Close()
+
+	fmt.Println("Listening for UDP on", addr)
+
+	buffer := make([]byte, 1024)
+
+	for {
+		// 读取UDP数据包
+		n, addr, err := conn.ReadFromUDP(buffer)
+		if err != nil {
+			fmt.Println("Error reading UDP:", err)
+			continue
+		}
+
+		fmt.Printf("Received UDP message from %s: %s\n", addr.String(), string(buffer[:n]))
+	}
+}
