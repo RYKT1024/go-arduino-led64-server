@@ -8,11 +8,12 @@ import (
 )
 
 func main() {
+
 	// 创建mux路由器
 	router := mux.NewRouter()
 
 	// 添加HTTP路由
-	router.HandleFunc("/", HandleHTTP)
+	router.HandleFunc("/config", ConfigHandler)
 
 	// 启动HTTP服务器
 	go func() {
@@ -22,9 +23,6 @@ func main() {
 			fmt.Println("Error starting HTTP server:", err)
 		}
 	}()
-
-	// 启动UDP服务器
-	go HandleUDP()
 
 	// 阻塞主goroutine，使程序持续运行
 	select {}

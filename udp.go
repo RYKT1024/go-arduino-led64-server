@@ -5,7 +5,7 @@ import (
 	"net"
 )
 
-func Udp_send(targetIP, targetPort, data string) {
+func UdpSend(targetIP, targetPort, data string) {
 
 	// 构建目标地址
 	targetAddr, err := net.ResolveUDPAddr("udp", targetIP+":"+targetPort)
@@ -30,24 +30,25 @@ func Udp_send(targetIP, targetPort, data string) {
 	fmt.Println("UDP packet sent successfully.")
 }
 
-func HandleUDP() {
+func HandleUDP() string {
 	// 监听UDP端口
 	addr, err := net.ResolveUDPAddr("udp", ":6688")
 	if err != nil {
 		fmt.Println("Error resolving UDP address:", err)
-		return
+		return ""
 	}
 
 	conn, err := net.ListenUDP("udp", addr)
 	if err != nil {
 		fmt.Println("Error listening to UDP:", err)
-		return
+		return ""
 	}
 	defer conn.Close()
 
 	fmt.Println("Listening for UDP on", addr)
 
-	buffer := make([]byte, 1024)
+	buffer := make([]byte, 2048)
+	var json_data string
 
 	for {
 		// 读取UDP数据包
@@ -57,6 +58,21 @@ func HandleUDP() {
 			continue
 		}
 
-		fmt.Printf("Received UDP message from %s: %s\n", addr.String(), string(buffer[:n]))
+		// 创建新的切片，只包含有效数据
+		data := make([]byte, n)
+		copy(data, buffer[:n])
+		json_data = string(data)
+
+		fmt.Printf("Received UDP message from %s: %s\n", addr.String(), json_data)
+		dataType, dataContent, err := ParseUdp(json_data)
+		if err != nil {
+			fmt.Println("Error parsing UDP:", err)
+			continue
+		}
+
+		if dataType == "config" {
+			return dataContent
+		}
+
 	}
 }
