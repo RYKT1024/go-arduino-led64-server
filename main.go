@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/rs/cors"
 )
 
 func main() {
@@ -13,17 +14,20 @@ func main() {
 	router := mux.NewRouter()
 
 	// 添加HTTP路由
-	router.HandleFunc("/config", ConfigHandler)
+	router.HandleFunc("/config", ConfigHandler).Methods("GET")
+	router.HandleFunc("/set", SetHandler).Methods("POST")
+	router.HandleFunc("/set_IP", SetIP_Handler).Methods("POST")
 
 	// 启动HTTP服务器
-	go func() {
-		fmt.Println("Listening for HTTP on :6789")
-		err := http.ListenAndServe(":6789", router)
-		if err != nil {
-			fmt.Println("Error starting HTTP server:", err)
-		}
-	}()
+	fmt.Println("Listening for HTTP on :6789")
 
-	// 阻塞主goroutine，使程序持续运行
-	select {}
+	c := cors.New(cors.Options{
+		AllowedOrigins:   []string{"*"},
+		AllowedMethods:   []string{"GET", "POST", "OPTIONS"},
+		AllowedHeaders:   []string{"Content-Type", "Origin"},
+		AllowCredentials: true,
+	})
+
+	handler := c.Handler(router)
+	http.ListenAndServe(":6789", handler)
 }

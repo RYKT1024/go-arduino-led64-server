@@ -2,8 +2,12 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"net/http"
 )
+
+var IP string = "192.168.31.241"
+var PORT string = "1122"
 
 func ConfigHandler(w http.ResponseWriter, r *http.Request) {
 	// 使用通道来获取 HandleUDP 函数的返回值
@@ -16,14 +20,29 @@ func ConfigHandler(w http.ResponseWriter, r *http.Request) {
 		resultChannel <- result
 	}()
 
-	UdpSend("192.168.31.241", "1122", `{"mode":"get_onboard"}`)
+	UdpSend(IP, PORT, `{"mode":"get_onboard"}`)
 
 	// 从通道中获取返回值
 	result := <-resultChannel
 
 	// 打印返回值
-	fmt.Println("HandleUDP result:", result)
+	fmt.Println("UDP config get successfully.")
 	fmt.Fprint(w, result)
 }
 
-//
+func SetHandler(w http.ResponseWriter, r *http.Request) {
+
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, "Error reading request body", http.StatusInternalServerError)
+		return
+	}
+
+	bodyString := string(body)
+	UdpSend(IP, PORT, bodyString)
+	fmt.Fprint(w, bodyString)
+}
+
+func SetIP_Handler(w http.ResponseWriter, r *http.Request) {
+	//
+}

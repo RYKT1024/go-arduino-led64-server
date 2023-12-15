@@ -63,7 +63,8 @@ func HandleUDP() string {
 		copy(data, buffer[:n])
 		json_data = string(data)
 
-		fmt.Printf("Received UDP message from %s: %s\n", addr.String(), json_data)
+		// fmt.Printf("Received UDP message from %s: %s\n", addr.String(), json_data)
+		fmt.Printf("Received UDP message from %s.\n", addr.String())
 		dataType, dataContent, err := ParseUdp(json_data)
 		if err != nil {
 			fmt.Println("Error parsing UDP:", err)
