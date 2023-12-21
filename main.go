@@ -15,6 +15,7 @@ func main() {
 
 	// 添加HTTP路由
 	router.HandleFunc("/config", ConfigHandler).Methods("GET")
+	router.HandleFunc("/status", StatusHandler).Methods("GET")
 	router.HandleFunc("/set", SetHandler).Methods("POST")
 	router.HandleFunc("/set_IP", SetIP_Handler).Methods("POST")
 

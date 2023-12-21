@@ -46,3 +46,21 @@ func SetHandler(w http.ResponseWriter, r *http.Request) {
 func SetIP_Handler(w http.ResponseWriter, r *http.Request) {
 	//
 }
+
+func StatusHandler(w http.ResponseWriter, r *http.Request) {
+	resultChannel := make(chan string)
+
+	go func() {
+		result := HandleUDP()
+		resultChannel <- result
+	}()
+
+	UdpSend(IP, PORT, `{"mode":"status"}`)
+
+	// 从通道中获取返回值
+	result := <-resultChannel
+
+	// 打印返回值
+	fmt.Println("UDP status get successfully.")
+	fmt.Fprint(w, result)
+}
