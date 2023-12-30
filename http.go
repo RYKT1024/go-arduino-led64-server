@@ -43,10 +43,6 @@ func SetHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, bodyString)
 }
 
-func SetIP_Handler(w http.ResponseWriter, r *http.Request) {
-	//
-}
-
 func StatusHandler(w http.ResponseWriter, r *http.Request) {
 	resultChannel := make(chan string)
 
